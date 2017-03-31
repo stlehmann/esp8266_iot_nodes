@@ -4,7 +4,7 @@ import bme280
 from credentials import *
 from umqtt.simple import MQTTClient
 
-MQTT_TOPIC = 'test'
+MQTT_TOPIC = 'home/balcony'
 WIFI_TIMEOUT_MS = 10000
 
 I2C_SCL_PIN = 0
@@ -12,12 +12,12 @@ I2C_SDA_PIN = 4
 I2C_BME280_ADDRESS = 119
 
 SLEEP_TIME_MS = 10000
+ENABLE_DEEPSLEEP = True 
 
 
 i2c = None
 bme = None
-mqtt_client = MQTTClient(MQTT_CLIENT_ID, MQTT_SERVER, MQTT_PORT, MQTT_USER,
-                         MQTT_PASSWORD, ssl=MQTT_SSL)
+mqtt_client = None
 
 
 def wifi_connect():
@@ -36,6 +36,9 @@ def wifi_connect():
 
 
 def mqtt_connect():
+    global mqtt_client
+    mqtt_client = MQTTClient(MQTT_CLIENT_ID, MQTT_SERVER, MQTT_PORT, MQTT_USER,
+                         MQTT_PASSWORD, ssl=MQTT_SSL)
     print('connecting to mosquitto server...', end='')
     res = mqtt_client.connect()
     if res == 0:
@@ -46,6 +49,12 @@ def mqtt_connect():
 
 def mqtt_disconnect():
     mqtt_client.disconnect()
+
+
+def mqtt_publish(topic, msg):
+    print('publishing topic {}: {}...'.format(topic, msg), end='')
+    mqtt_client.publish(topic, msg)
+    print('done')
 
 
 def init_i2c():
@@ -70,12 +79,21 @@ def run():
     mqtt_connect()
     init_i2c()
 
-    vals = '[' + ','.join(bme.values) + ']'
-    print('publishing topic {}: {}...'.format(MQTT_TOPIC, vals), end='')
-    mqtt_client.publish(MQTT_TOPIC, vals)
-    print('done')
-    print('disconnecting from mosquitto server...', end='')
-    mqtt_disconnect()
-    print('done')
+    while True:
+        vals = bme.values
 
-    deepsleep()
+        temp = vals[0][:-1]
+        pressure = vals[1][:-3]
+        humidity = vals[2][:-1]
+
+        mqtt_publish('home/balkony/temp', temp)
+        mqtt_publish('home/balkony/pressure', pressure)
+        mqtt_publish('home/balkony/humidity', humidity)
+
+        if ENABLE_DEEPSLEEP:
+            print('disconnecting from mosquitto server...', end='')
+            mqtt_disconnect()
+            print('done')
+            deepsleep()
+        else:
+            utime.sleep(SLEEP_TIME_MS / 1000)
