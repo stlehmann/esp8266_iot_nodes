@@ -9,6 +9,7 @@ from umqtt.simple import MQTTClient
 
 MQTT_TOPIC = 'home/balcony'
 MQTT_MAX_ATTEMPTS = 3
+MQTT_WAIT_MS = 500
 
 WIFI_TIMEOUT_MS = 10000
 WIFI_MAX_ATTEMPTS = 3
@@ -123,11 +124,11 @@ def run():
         pressure = vals[1][:-3]
         humidity = vals[2][:-1]
 
-        utime.sleep_ms(100)
+        utime.sleep_ms(MQTT_WAIT_MS)
         mqtt_publish('home/balkony/temp', temp)
-        utime.sleep_ms(100)
+        utime.sleep_ms(MQTT_WAIT_MS)
         mqtt_publish('home/balkony/pressure', pressure)
-        utime.sleep_ms(100)
+        utime.sleep_ms(MQTT_WAIT_MS)
         mqtt_publish('home/balkony/humidity', humidity)
 
         if ENABLE_DEEPSLEEP:
