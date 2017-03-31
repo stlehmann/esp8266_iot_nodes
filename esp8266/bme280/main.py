@@ -8,6 +8,8 @@ from credentials import WIFI_SSID, WIFI_PASSWORD, MQTT_CLIENT_ID, \
 from umqtt.simple import MQTTClient
 
 MQTT_TOPIC = 'home/balcony'
+MQTT_MAX_ATTEMPTS = 3
+
 WIFI_TIMEOUT_MS = 10000
 WIFI_MAX_ATTEMPTS = 3
 
@@ -15,7 +17,7 @@ I2C_SCL_PIN = 0
 I2C_SDA_PIN = 4
 I2C_BME280_ADDRESS = 119
 
-SLEEP_TIME_MS = 10000
+SLEEP_TIME_S = 60
 ENABLE_DEEPSLEEP = True
 
 
@@ -25,6 +27,10 @@ mqtt_client = None
 
 
 class WifiConnectionError(Exception):
+    pass
+
+
+class MQTTConnectionError(Exception):
     pass
 
 
@@ -57,12 +63,25 @@ def mqtt_connect():
     global mqtt_client
     mqtt_client = MQTTClient(MQTT_CLIENT_ID, MQTT_SERVER, MQTT_PORT, MQTT_USER,
                              MQTT_PASSWORD, ssl=MQTT_SSL)
-    print('connecting to mosquitto server...', end='')
-    res = mqtt_client.connect()
-    if res == 0:
-        print('done')
+    attempt = 1
+    while attempt <= MQTT_MAX_ATTEMPTS:
+        print('connecting to mosquitto server "{}:{}" (attempt {})...'
+              .format(MQTT_SERVER, MQTT_PORT, attempt), end='')
+
+        try:
+            res = mqtt_client.connect()
+            if res == 0:
+                print('done')
+                break
+            else:
+                print('error {}'.format(res))
+                attempt += 1
+
+        except OSError:
+            print('error')
+            attempt += 1
     else:
-        print('errorcode', res)
+        raise MQTTConnectionError()
 
 
 def mqtt_disconnect():
@@ -87,8 +106,8 @@ def init_i2c():
 def deepsleep():
     rtc = machine.RTC()
     rtc.irq(trigger=rtc.ALARM0, wake=machine.DEEPSLEEP)
-    rtc.alarm(rtc.ALARM0, SLEEP_TIME_MS)
-    print('entering deepsleep ({} seconds)'.format(SLEEP_TIME_MS / 1000))
+    rtc.alarm(rtc.ALARM0, SLEEP_TIME_S * 1000)
+    print('entering deepsleep ({} seconds)'.format(SLEEP_TIME_S))
     machine.deepsleep()
 
 
@@ -104,8 +123,11 @@ def run():
         pressure = vals[1][:-3]
         humidity = vals[2][:-1]
 
+        utime.sleep_ms(100)
         mqtt_publish('home/balkony/temp', temp)
+        utime.sleep_ms(100)
         mqtt_publish('home/balkony/pressure', pressure)
+        utime.sleep_ms(100)
         mqtt_publish('home/balkony/humidity', humidity)
 
         if ENABLE_DEEPSLEEP:
@@ -114,4 +136,5 @@ def run():
             print('done')
             deepsleep()
         else:
-            utime.sleep(SLEEP_TIME_MS / 1000)
+            print('sleeping for {} seconds'.format(SLEEP_TIME_S))
+            utime.sleep(SLEEP_TIME_S)
