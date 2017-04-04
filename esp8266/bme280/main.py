@@ -49,7 +49,7 @@ def wifi_connect():
             while not sta_if.isconnected():
                 if abs(utime.ticks_ms() - t0) > WIFI_TIMEOUT_MS:
                     print('error')
-                    print('wiwi connection timed out')
+                    print('wifi connection timed out')
                     attempt += 1
                     break
             else:
@@ -113,28 +113,44 @@ def deepsleep():
 
 
 def run():
+
     init_i2c()
-    wifi_connect()
-    mqtt_connect()
 
     while True:
-        vals = bme.values
 
-        temp = vals[0][:-1]
-        pressure = vals[1][:-3]
-        humidity = vals[2][:-1]
+        # error flag to skip operations
+        err = False
 
-        utime.sleep_ms(MQTT_WAIT_MS)
-        mqtt_publish('home/balkony/temp', temp)
-        utime.sleep_ms(MQTT_WAIT_MS)
-        mqtt_publish('home/balkony/pressure', pressure)
-        utime.sleep_ms(MQTT_WAIT_MS)
-        mqtt_publish('home/balkony/humidity', humidity)
+        try:
+            wifi_connect()
+        except WifiConnectionError:
+            err = True
+
+        if not err:
+            try:
+                mqtt_connect()
+            except MQTTConnectionError:
+                err = True
+
+        if not err:
+            vals = bme.values
+
+            temp = vals[0][:-1]
+            pressure = vals[1][:-3]
+            humidity = vals[2][:-1]
+
+            utime.sleep_ms(MQTT_WAIT_MS)
+            mqtt_publish('home/balkony/temp', temp)
+            utime.sleep_ms(MQTT_WAIT_MS)
+            mqtt_publish('home/balkony/pressure', pressure)
+            utime.sleep_ms(MQTT_WAIT_MS)
+            mqtt_publish('home/balkony/humidity', humidity)
 
         if ENABLE_DEEPSLEEP:
-            print('disconnecting from mosquitto server...', end='')
-            mqtt_disconnect()
-            print('done')
+            if not err:
+                print('disconnecting from mosquitto server...', end='')
+                mqtt_disconnect()
+                print('done')
             deepsleep()
         else:
             print('sleeping for {} seconds'.format(SLEEP_TIME_S))

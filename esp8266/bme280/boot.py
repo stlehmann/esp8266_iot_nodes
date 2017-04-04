@@ -2,9 +2,10 @@
 #import esp
 #esp.osdebug(None)
 import gc
-#import webrepl
-#webrepl.start()
-gc.collect()
+
+import webrepl
+# webrepl.start()
+# gc.collect()
 
 import main
 main.run()
