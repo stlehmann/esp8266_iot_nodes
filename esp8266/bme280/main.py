@@ -2,11 +2,12 @@ import network
 import utime
 import machine
 import bme280
-from credentials import WIFI_SSID, WIFI_PASSWORD, MQTT_CLIENT_ID, \
+from credentials import WIFI_SSID, WIFI_PASSWORD, \
     MQTT_SERVER, MQTT_PORT, MQTT_USER, MQTT_PASSWORD, MQTT_SSL
 
 from umqtt.simple import MQTTClient
 
+MQTT_CLIENT_ID = 'node1'
 MQTT_TOPIC = 'home/balcony'
 MQTT_MAX_ATTEMPTS = 3
 MQTT_WAIT_MS = 500
@@ -118,40 +119,43 @@ def run():
 
     while True:
 
-        # error flag to skip operations
-        err = False
-
         try:
-            wifi_connect()
-        except WifiConnectionError:
-            err = True
+            # error flag to skip operations
+            err = False
 
-        if not err:
             try:
-                mqtt_connect()
-            except MQTTConnectionError:
+                wifi_connect()
+            except WifiConnectionError:
                 err = True
 
-        if not err:
-            vals = bme.values
-
-            temp = vals[0][:-1]
-            pressure = vals[1][:-3]
-            humidity = vals[2][:-1]
-
-            utime.sleep_ms(MQTT_WAIT_MS)
-            mqtt_publish('home/balkony/temp', temp)
-            utime.sleep_ms(MQTT_WAIT_MS)
-            mqtt_publish('home/balkony/pressure', pressure)
-            utime.sleep_ms(MQTT_WAIT_MS)
-            mqtt_publish('home/balkony/humidity', humidity)
-
-        if ENABLE_DEEPSLEEP:
             if not err:
-                print('disconnecting from mosquitto server...', end='')
-                mqtt_disconnect()
-                print('done')
-            deepsleep()
-        else:
-            print('sleeping for {} seconds'.format(SLEEP_TIME_S))
-            utime.sleep(SLEEP_TIME_S)
+                try:
+                    mqtt_connect()
+                except MQTTConnectionError:
+                    err = True
+
+            if not err:
+                vals = bme.values
+
+                temp = vals[0][:-1]
+                pressure = vals[1][:-3]
+                humidity = vals[2][:-1]
+
+                utime.sleep_ms(MQTT_WAIT_MS)
+                mqtt_publish('home/balkony/temp', temp)
+                utime.sleep_ms(MQTT_WAIT_MS)
+                mqtt_publish('home/balkony/pressure', pressure)
+                utime.sleep_ms(MQTT_WAIT_MS)
+                mqtt_publish('home/balkony/humidity', humidity)
+
+            if ENABLE_DEEPSLEEP:
+                if not err:
+                    print('disconnecting from mosquitto server...', end='')
+                    mqtt_disconnect()
+                    print('done')
+                deepsleep()
+            else:
+                print('sleeping for {} seconds'.format(SLEEP_TIME_S))
+                utime.sleep(SLEEP_TIME_S)
+        except:
+            pass
