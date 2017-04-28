@@ -96,6 +96,9 @@ class MQTTClientWrapper:
     def check_msg(self):
         return self.mqtt_client.check_msg()
 
+    def ping(self):
+        return self.mqtt_client.ping()
+
 
 class WifiWrapper:
 
