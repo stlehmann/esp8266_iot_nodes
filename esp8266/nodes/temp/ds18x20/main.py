@@ -47,5 +47,5 @@ def run():
                 core.deepsleep(SLEEP_TIME_S)
             else:
                 utime.sleep(SLEEP_TIME_S)
-        except Exception as e:
+        except:
             print(e)
