@@ -14,19 +14,24 @@ SLEEP_TIME_S = 60
 
 
 def run():
-    wifi = core.WifiWrapper(credentials.WIFI_SSID, credentials.WIFI_PASSWORD)
-    mqtt = core.MQTTClientWrapper(
-        client_id=MQTT_CLIENT_ID,
-        server=credentials.MQTT_SERVER,
-        port=credentials.MQTT_PORT,
-        user=credentials.MQTT_USER,
-        password=credentials.MQTT_PASSWORD,
-        ssl=credentials.MQTT_SSL,
-    )
+    wifi = None
+    mqtt = None
 
     while True:
         try:
+            if wifi is None:
+                wifi = core.WifiWrapper(credentials.WIFI_SSID, credentials.WIFI_PASSWORD)
             wifi.connect()
+
+            if mqtt is None:
+                mqtt = core.MQTTClientWrapper(
+                    client_id=MQTT_CLIENT_ID,
+                    server=credentials.MQTT_SERVER,
+                    port=credentials.MQTT_PORT,
+                    user=credentials.MQTT_USER,
+                    password=credentials.MQTT_PASSWORD,
+                    ssl=credentials.MQTT_SSL,
+                )
             mqtt.connect()
 
             print('searching for Onewire Sensors...', end='')
@@ -47,5 +52,5 @@ def run():
                 core.deepsleep(SLEEP_TIME_S)
             else:
                 utime.sleep(SLEEP_TIME_S)
-        except:
+        except Exception as e:
             print(e)
