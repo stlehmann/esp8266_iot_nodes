@@ -21,15 +21,29 @@ MicroPython on the ESP8266][3] on how to install it.
 
 ## Configuration
 
-### main.py
+The configuration is done in the config.py. The following tables show you all of
+the configuration values. Import is that you setup wifi connection credentials
+and the mqtt server. You don't need to supply ``MQTT_USER`` and
+``MQTT_PASSWORD`` if you haven' t enabled authentification on your MQTT broker.
+However it is recommended to do so to prevent others from intruding.
 
-| name                  | description                   | default value |
-| --------------------- | ----------------------------- |:-------------:|
-| ``MQTT_CLIENT_ID``    | mqtt client id of the node    | ``"ds18x20"``   |
-| ``MQTT_TOPIC``        | mqtt topic to use for publishing the measurement values | - |
-| ``ONEWIRE_PIN``       | the pin nr. of the NodeMCU where the temperature sensor is connected to | 0 |
+### config.py
+
+| name                  | description                                                                 | default value        |
+| --------------------- | --------------------------------------------------------------------------- |:--------------------:|
+| ``WIFI_SSID``         | SSID of the wifi you want to connect to                                     | -                    |
+| ``WIFI_PASSWORD``     | Passwrod for your wifi access                                               | -                    |
+| ``MQTT_SERVER``       | Address of your mqtt broker                                                 | ``"localhost"``      |
+| ``MQTT_PORT``         | Port of your mqtt broker (default=1883, ssl=8883)                           | ``1883``             |
+| ``MQTT_USER``         | Username for the mqtt broker                                                | -                    |
+| ``MQTT_PASSWORD``     | Only needed if a username is given                                          | -                    |
+| ``MQTT_SSL``          | Use ssl connection to the broker. Set port to 8883 if using this.           | -                    |
+| ``MQTT_CERFILE``      | If you have a certfile for your ssl connection supply the filename here.    | -                    |
+| ``MQTT_CLIENT_ID``    | mqtt client id of the node                                                  | ``"umqtt_client"``   |
+| ``MQTT_TOPIC``        | mqtt topic to use for publishing the measurement values                     | -                    |
+| ``ONEWIRE_PIN``       | the pin nr. of the NodeMCU where the temperature sensor is connected to     | 0                    |
 | ``ENABLE_DEEPSLEEP``  | if enabled the NodeMCU goes into deepsleep after execution to save power. The sleeptime is set by ``SLEEP_TIME_S``| True |
-| ``SLEEP_TIME_S``      | time between two measurements | 60 |
+| ``SLEEP_TIME_S``      | time between two measurements                                               | 60                   |
 
 [0]: schematic.png
 [1]: https://www.maximintegrated.com/en/app-notes/index.mvp/id/4377
