@@ -14,7 +14,7 @@ MicroPython on the ESP8266][3] on how to install it.
 ## Modules
 
 * ``core.py``
-* ``credentials.py``
+* ``config.py``
 * ``boot.py``
 * ``main.py``
 * [``umqtt/simple.py``][4] from Micropython Library
@@ -32,7 +32,7 @@ However it is recommended to do so to prevent others from intruding.
 | name                  | description                                                                 | default value        |
 | --------------------- | --------------------------------------------------------------------------- |:--------------------:|
 | ``WIFI_SSID``         | SSID of the wifi you want to connect to                                     | -                    |
-| ``WIFI_PASSWORD``     | Passwrod for your wifi access                                               | -                    |
+| ``WIFI_PASSWORD``     | Password for your wifi access                                               | -                    |
 | ``MQTT_SERVER``       | Address of your mqtt broker                                                 | ``"localhost"``      |
 | ``MQTT_PORT``         | Port of your mqtt broker (default=1883, ssl=8883)                           | ``1883``             |
 | ``MQTT_USER``         | Username for the mqtt broker                                                | -                    |
