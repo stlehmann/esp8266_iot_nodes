@@ -47,6 +47,7 @@ def run():
                 mqtt.disconnect()
                 core.deepsleep(sleeptime)
             else:
+                print('sleeping for {} seconds.'.format(sleeptime))
                 utime.sleep(sleeptime)
         except Exception as e:
             print(e)
