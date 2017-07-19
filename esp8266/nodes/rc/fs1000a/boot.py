@@ -1,1 +1,0 @@
-/Users/stefan/Documents/micropython/projects/umqtt_clients/esp8266/lib/boot.py

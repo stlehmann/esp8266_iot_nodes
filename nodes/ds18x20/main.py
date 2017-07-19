@@ -28,8 +28,9 @@ def run():
                 )
             mqtt.connect()
 
-            print('searching for Onewire Sensors...', end='')
-            ow = onewire.OneWire(machine.Pin(config.get('ONEWIRE_PIN', 0)))
+            ow_pin = config.get('ONEWIRE_PIN', 0)
+            ow = onewire.OneWire(machine.Pin(ow_pin))
+            print('searching for Onewire Sensors on pin {}...'.format(ow_pin), end='')
             temp_sens = ds18x20.DS18X20(ow)
             rom = temp_sens.scan()
             if len(rom) > 0:
