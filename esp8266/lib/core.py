@@ -4,11 +4,6 @@ import machine
 from umqtt.simple import MQTTClient
 
 
-WIFI_TIMEOUT_MS = 10000
-WIFI_MAX_ATTEMPTS = 3
-MQTT_MAX_ATTEMPTS = 3
-
-
 def deepsleep(seconds):
     rtc = machine.RTC()
     rtc.irq(trigger=rtc.ALARM0, wake=machine.DEEPSLEEP)
@@ -28,7 +23,7 @@ class MQTTConnectionError(Exception):
 class MQTTClientWrapper:
 
     def __init__(self, client_id, server, port=1883, user=None, password=None,
-                 keepalive=0, ssl=False, ssl_params={}):
+                 keepalive=0, ssl=False, ssl_params={}, max_retries=3):
 
         self.server = server
         self.port = port
@@ -45,10 +40,11 @@ class MQTTClientWrapper:
         self.mqtt_client.set_callback(self._process_incoming_msgs)
         self.callbacks = {}
         self.connected = False
+        self.max_retries = max_retries
 
     def connect(self):
         attempt = 1
-        while attempt <= MQTT_MAX_ATTEMPTS:
+        while attempt <= self.max_retries:
             print('connecting to mosquitto server "{}:{}" (attempt {})...'
                   .format(self.server, self.port,
                           attempt), end='')
@@ -102,22 +98,24 @@ class MQTTClientWrapper:
 
 class WifiWrapper:
 
-    def __init__(self, ssid, password):
+    def __init__(self, ssid, password, max_retries=3, timeout_ms=10000):
         self.ssid = ssid
         self.password = password
+        self.max_retries = max_retries
+        self.timeout_ms = timeout_ms
 
     def connect(self):
         attempt = 1
         sta_if = network.WLAN(network.STA_IF)
         if not sta_if.isconnected():
             sta_if.active(True)
-            while attempt <= WIFI_MAX_ATTEMPTS:
+            while attempt <= self.max_retries:
                 print('connecting to network "{}" (attempt {})...'
                       .format(self.ssid, attempt), end='')
                 sta_if.connect(self.ssid, self.password)
                 t0 = utime.ticks_ms()
                 while not sta_if.isconnected():
-                    if abs(utime.ticks_ms() - t0) > WIFI_TIMEOUT_MS:
+                    if abs(utime.ticks_ms() - t0) > self.timeout_ms:
                         print('error')
                         print('wifi connection timed out')
                         attempt += 1
