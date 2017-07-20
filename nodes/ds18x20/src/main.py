@@ -1,4 +1,5 @@
 import utime
+import ujson
 from config import config
 import core
 import onewire
@@ -30,17 +31,22 @@ def run():
                       .format(len(rom)))
                 temp_sens.convert_temp()
                 temp = temp_sens.read_temp(rom[0])
+
                 print('temperature: {:.2f}°C'.format(temp))
-                mqtt.publish(config.MQTT_TOPIC, '{:.2f}'.format(temp))
+
+                # create payload
+                payload = {
+                    'value': '{:.2f}'.format(temp),
+                    'unit': 'C'
+                }
+                mqtt.publish(config.MQTT_TOPIC, ujson.dumps(payload))
             else:
                 print('failed. none found.')
 
-            sleeptime = config.SLEEP_TIME_S
             if config.ENABLE_DEEPSLEEP:
                 mqtt.disconnect()
-                core.deepsleep(sleeptime)
-            else:
-                print('sleeping for {} seconds.'.format(sleeptime))
-                utime.sleep(sleeptime)
+
+            core.sleep(config)
+
         except Exception as e:
             print(e)

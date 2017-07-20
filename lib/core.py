@@ -4,12 +4,16 @@ import machine
 from umqtt.simple import MQTTClient
 
 
-def deepsleep(seconds):
-    rtc = machine.RTC()
-    rtc.irq(trigger=rtc.ALARM0, wake=machine.DEEPSLEEP)
-    rtc.alarm(rtc.ALARM0, seconds * 1000)
-    print('entering deepsleep ({} seconds)'.format(seconds))
-    machine.deepsleep()
+def sleep(config):
+    if config.ENABLE_DEEPSLEEP:
+        rtc = machine.RTC()
+        rtc.irq(trigger=rtc.ALARM0, wake=machine.DEEPSLEEP)
+        rtc.alarm(rtc.ALARM0, config.SLEEP_TIME_S * 1000)
+        print('entering deepsleep ({} seconds)'.format(config.SLEEP_TIME_S))
+        machine.deepsleep()
+    else:
+        print('sleeping for {} seconds.'.format(config.SLEEP_TIME_S))
+        utime.sleep(config.SLEEP_TIME_S)
 
 
 class WifiConnectionError(Exception):
