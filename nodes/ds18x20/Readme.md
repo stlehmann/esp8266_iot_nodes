@@ -6,7 +6,11 @@
 * one temperature sensor **DS18B20** or **DS18S20**, recommended is the DS18B20,
 see [Maximintegrated Application Note 4377][1] for details
 
-![Schematic][0]
+![Assignment][0]
+
+## Schematic
+
+![Schematic][5]
 
 You will need to put Micropython on your NodeMCU. See [Getting started with
 MicroPython on the ESP8266][3] on how to install it.
@@ -45,8 +49,9 @@ However it is recommended to do so to prevent others from intruding.
 | ``ENABLE_DEEPSLEEP``  | if enabled the NodeMCU goes into deepsleep after execution to save power. The sleeptime is set by ``SLEEP_TIME_S``| True |
 | ``SLEEP_TIME_S``      | time between two measurements                                               | 60                   |
 
-[0]: schematic.png
+[0]: assignment.png
 [1]: https://www.maximintegrated.com/en/app-notes/index.mvp/id/4377
 [2]: http://nodemcu.com/index_en.html
 [3]: https://docs.micropython.org/en/latest/esp8266/esp8266/tutorial/intro.html
 [4]: https://github.com/micropython/micropython-lib/blob/master/umqtt.simple/umqtt/simple.py
+[5]: schematic.png

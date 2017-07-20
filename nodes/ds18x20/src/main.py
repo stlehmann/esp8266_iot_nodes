@@ -13,22 +13,21 @@ def run():
     while True:
         try:
             if wifi is None:
-                wifi = core.WifiWrapper(config['WIFI_SSID'],
-                                        config['WIFI_PASSWORD'])
+                wifi = core.WifiWrapper(config.WIFI_SSID, config.WIFI_PASSWORD)
             wifi.connect()
 
             if mqtt is None:
                 mqtt = core.MQTTClientWrapper(
-                    client_id=config.get('MQTT_CLIENT_ID', 'umqtt_client'),
-                    server=config.get('MQTT_SERVER', 'localhost'),
-                    port=config.get('MQTT_PORT', 0),
-                    user=config.get('MQTT_USER'),
-                    password=config.get('MQTT_PASSWORD'),
-                    ssl=config.get('MQTT_SSL', False),
+                    client_id=config.MQTT_CLIENT_ID,
+                    server=config.MQTT_SERVER,
+                    port=config.MQTT_PORT,
+                    user=config.MQTT_USER,
+                    password=config.MQTT_PASSWORD,
+                    ssl=config.MQTT_SSL,
                 )
             mqtt.connect()
 
-            ow_pin = config.get('ONEWIRE_PIN', 0)
+            ow_pin = config.ONEWIRE_PIN
             ow = onewire.OneWire(machine.Pin(ow_pin))
             print('searching for Onewire Sensors on pin {}...'.format(ow_pin), end='')
             temp_sens = ds18x20.DS18X20(ow)
@@ -39,12 +38,12 @@ def run():
                 temp_sens.convert_temp()
                 temp = temp_sens.read_temp(rom[0])
                 print('temperature: {:.2f}°C'.format(temp))
-                mqtt.publish(config['MQTT_TOPIC'], '{:.2f}'.format(temp))
+                mqtt.publish(config.MQTT_TOPIC, '{:.2f}'.format(temp))
             else:
                 print('failed. none found.')
 
-            sleeptime = config.get('SLEEP_TIME_S', 60)
-            if config.get('ENABLE_DEEPSLEEP', False):
+            sleeptime = config.SLEEP_TIME_S
+            if config.ENABLE_DEEPSLEEP:
                 mqtt.disconnect()
                 core.deepsleep(sleeptime)
             else:
