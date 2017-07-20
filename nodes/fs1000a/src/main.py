@@ -36,7 +36,7 @@ def run():
     try:
         wifi = core.WifiWrapper(config.WIFI_SSID, config.WIFI_PASSWORD)
         wifi.connect()
-    except WifiConnectionError:
+    except core.WifiConnectionError:
         machine.reset()
 
     # Start WebREPL
@@ -54,10 +54,10 @@ def run():
             user=config.MQTT_USER,
             password=config.MQTT_PASSWORD,
             ssl=config.MQTT_SSL,
-            keepalive=MQTT_KEEPALIVE
+            keepalive=config.MQTT_KEEPALIVE
         )
         mqtt.connect()
-        mqtt.subscribe('home/power/in', handle)
+        mqtt.subscribe(config.MQTT_TOPIC + '/in', handle)
     except core.MQTTConnectionError:
         print('Could not connect to Mosquitto server. Performing reset '
               'in {} seconds.'.format(config.ERROR_RESET_TIME_S))
@@ -67,19 +67,19 @@ def run():
     # Workloop
     ping_ticks_ms = utime.ticks_ms()
     while True:
-        try:
-            mqtt.check_msg()
-            if (abs(utime.ticks_ms() - ping_ticks_ms) >= 
-                    (1000 * config.MQTT_KEEPALIVE / 2.0)):
-                print('Sending Ping...', end='')
-                mqtt.ping()
-                print('done')
-                ping_ticks_ms = utime.ticks_ms()
-        except Exception as e:
-            print(e)
-            print('Performing reset in {} seconds.'
-                  .format(config.ERROR_RESET_TIME_S))
-            utime.sleep(config.ERROR_RESET_TIME_S)
-            machine.reset()
+        # try:
+        mqtt.check_msg()
+        if (abs(utime.ticks_ms() - ping_ticks_ms) >= 
+                (1000 * config.MQTT_KEEPALIVE / 2.0)):
+            print('Sending Ping...', end='')
+            mqtt.ping()
+            print('done')
+            ping_ticks_ms = utime.ticks_ms()
+        # except Exception as e:
+        #     print(e)
+        #     print('Performing reset in {} seconds.'
+        #           .format(config.ERROR_RESET_TIME_S))
+        #     utime.sleep(config.ERROR_RESET_TIME_S)
+        #     machine.reset()
         utime.sleep_ms(config.REFRESH_TIME_MS)
 
