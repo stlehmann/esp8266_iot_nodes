@@ -22,25 +22,24 @@ class MQTTConnectionError(Exception):
 
 class MQTTClientWrapper:
 
-    def __init__(self, client_id, server, port=1883, user=None, password=None,
-                 keepalive=0, ssl=False, ssl_params={}, max_retries=3):
+    def __init__(self, config):
 
-        self.server = server
-        self.port = port
+        self.server = config.MQTT_SERVER
+        self.port = config.MQTT_PORT
         self.mqtt_client = MQTTClient(
-            client_id=client_id,
-            server=server,
-            port=port,
-            user=user,
-            password=password,
-            keepalive=keepalive,
-            ssl=ssl,
-            ssl_params=ssl_params
+            client_id=config.MQTT_CLIENT_ID,
+            server=self.server,
+            port=self.port,
+            user=config.MQTT_USER,
+            password=config.MQTT_PASSWORD,
+            keepalive=config.MQTT_KEEPALIVE,
+            ssl=config.MQTT_SSL,
+            ssl_params=config.MQTT_SSL_PARAMS,
         )
         self.mqtt_client.set_callback(self._process_incoming_msgs)
         self.callbacks = {}
         self.connected = False
-        self.max_retries = max_retries
+        self.max_retries = config.MQTT_MAX_RETRIES 
 
     def connect(self):
         attempt = 1
@@ -98,11 +97,11 @@ class MQTTClientWrapper:
 
 class WifiWrapper:
 
-    def __init__(self, ssid, password, max_retries=3, timeout_ms=10000):
-        self.ssid = ssid
-        self.password = password
-        self.max_retries = max_retries
-        self.timeout_ms = timeout_ms
+    def __init__(self, config):
+        self.ssid = config.WIFI_SSID
+        self.password = config.WIFI_PASSWORD
+        self.max_retries = config.WIFI_MAX_RETRIES
+        self.timeout_ms = config.WIFI_TIMEOUT_MS
 
     def connect(self):
         attempt = 1

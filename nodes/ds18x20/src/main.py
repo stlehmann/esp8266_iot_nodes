@@ -13,18 +13,11 @@ def run():
     while True:
         try:
             if wifi is None:
-                wifi = core.WifiWrapper(config.WIFI_SSID, config.WIFI_PASSWORD)
+                wifi = core.WifiWrapper(config)
             wifi.connect()
 
             if mqtt is None:
-                mqtt = core.MQTTClientWrapper(
-                    client_id=config.MQTT_CLIENT_ID,
-                    server=config.MQTT_SERVER,
-                    port=config.MQTT_PORT,
-                    user=config.MQTT_USER,
-                    password=config.MQTT_PASSWORD,
-                    ssl=config.MQTT_SSL,
-                )
+                mqtt = core.MQTTClientWrapper(config)
             mqtt.connect()
 
             ow_pin = config.ONEWIRE_PIN

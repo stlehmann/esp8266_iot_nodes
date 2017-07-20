@@ -34,7 +34,7 @@ def run():
 
     # Bring up Wifi
     try:
-        wifi = core.WifiWrapper(config.WIFI_SSID, config.WIFI_PASSWORD)
+        wifi = core.WifiWrapper(config)
         wifi.connect()
     except core.WifiConnectionError:
         machine.reset()
@@ -47,15 +47,7 @@ def run():
 
     # Connect to MQTT Broker
     try:
-        mqtt = core.MQTTClientWrapper(
-            client_id=config.MQTT_CLIENT_ID,
-            server=config.MQTT_SERVER,
-            port=config.MQTT_PORT,
-            user=config.MQTT_USER,
-            password=config.MQTT_PASSWORD,
-            ssl=config.MQTT_SSL,
-            keepalive=config.MQTT_KEEPALIVE
-        )
+        mqtt = core.MQTTClientWrapper(config)
         mqtt.connect()
         mqtt.subscribe(config.MQTT_TOPIC + '/in', handle)
     except core.MQTTConnectionError:
@@ -67,19 +59,18 @@ def run():
     # Workloop
     ping_ticks_ms = utime.ticks_ms()
     while True:
-        # try:
-        mqtt.check_msg()
-        if (abs(utime.ticks_ms() - ping_ticks_ms) >= 
-                (1000 * config.MQTT_KEEPALIVE / 2.0)):
-            print('Sending Ping...', end='')
-            mqtt.ping()
-            print('done')
-            ping_ticks_ms = utime.ticks_ms()
-        # except Exception as e:
-        #     print(e)
-        #     print('Performing reset in {} seconds.'
-        #           .format(config.ERROR_RESET_TIME_S))
-        #     utime.sleep(config.ERROR_RESET_TIME_S)
-        #     machine.reset()
+        try:
+            mqtt.check_msg()
+            if (abs(utime.ticks_ms() - ping_ticks_ms) >=
+                    (1000 * config.MQTT_KEEPALIVE / 2.0)):
+                print('Sending Ping...', end='')
+                mqtt.ping()
+                print('done')
+                ping_ticks_ms = utime.ticks_ms()
+        except Exception as e:
+            print(e)
+            print('Performing reset in {} seconds.'
+                  .format(config.ERROR_RESET_TIME_S))
+            utime.sleep(config.ERROR_RESET_TIME_S)
+            machine.reset()
         utime.sleep_ms(config.REFRESH_TIME_MS)
-
