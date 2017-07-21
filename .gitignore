@@ -88,6 +88,6 @@ ENV/
 .ropeproject
 
 *.sublime*
-credentials.py
 installer/
 mydevices/
+credentials/
