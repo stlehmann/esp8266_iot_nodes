@@ -4,6 +4,14 @@ import machine
 from umqtt.simple import MQTTClient
 
 
+# WIFI constants
+WIFI_MAX_RETRIES = 3  # number of retries before reset
+WIFI_TIMEOUT_MS = 10000  # timout value for Wifi connection 
+
+# MQTT constants
+MQTT_MAX_RETRIES = 3  # maximum retries before reset
+
+
 def sleep(config):
     if config.ENABLE_DEEPSLEEP:
         rtc = machine.RTC()
@@ -43,7 +51,7 @@ class MQTTClientWrapper:
         self.mqtt_client.set_callback(self._process_incoming_msgs)
         self.callbacks = {}
         self.connected = False
-        self.max_retries = config.MQTT_MAX_RETRIES 
+        self.max_retries = MQTT_MAX_RETRIES
 
     def connect(self):
         attempt = 1
@@ -104,8 +112,8 @@ class WifiWrapper:
     def __init__(self, config):
         self.ssid = config.WIFI_SSID
         self.password = config.WIFI_PASSWORD
-        self.max_retries = config.WIFI_MAX_RETRIES
-        self.timeout_ms = config.WIFI_TIMEOUT_MS
+        self.max_retries = WIFI_MAX_RETRIES
+        self.timeout_ms = WIFI_TIMEOUT_MS
 
     def connect(self):
         attempt = 1

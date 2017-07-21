@@ -19,8 +19,6 @@ For each measurment cycle three messages will be sent with 500ms delay each.
 
 * `{MQTT_TOPIC}/temp`
 
-Payload
-
 | parameter      | value             |  description                 |
 |----------------|-------------------|------------------------------|
 |name            |`temperature`      |                              |
