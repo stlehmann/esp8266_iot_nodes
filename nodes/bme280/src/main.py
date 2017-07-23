@@ -40,17 +40,17 @@ def run():
             # publish temperature
             utime.sleep_ms(500)
             payload = {'name': 'temperature', 'value': temp, 'unit': 'C'}
-            mqtt.publish('home/balkony/temp', ujson.dumps(payload))
+            mqtt.publish(config.MQTT_TOPIC + '/temp', ujson.dumps(payload))
 
             # publish pressure
             utime.sleep_ms(500)
             payload = {'name': 'pressure', 'value': pressure, 'unit': 'bar'}
-            mqtt.publish('home/balkony/pressure', ujson.dumps(payload))
+            mqtt.publish(config.MQTT_TOPIC + '/pressure', ujson.dumps(payload))
 
             # publish humidity
             utime.sleep_ms(500)
             payload = {'name': 'humidity', 'value': humidity, 'unit': 'pct'}
-            mqtt.publish('home/balkony/humidity', ujson.dumps(payload))
+            mqtt.publish(config.MQTT_TOPIC + '/humidity', ujson.dumps(payload))
 
             if config.ENABLE_DEEPSLEEP:
                 mqtt.disconnect()
