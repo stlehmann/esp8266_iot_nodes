@@ -29,7 +29,8 @@ Wifi and WebREPL is activated.
 | --------- | ---------------------------------------- |
 | BME280    | humidity, temperature, pressure          |
 | FS1000A   | radio controlled power switch            |
-| DS18X20   | temperature sensor
+| DS18X20   | digital temperature sensor               |
+| HC-SR501  | passive infrared motion sensor           |
 
 [0]: http://nodemcu.com/index_en.html
 [1]: https://docs.micropython.org/en/latest/esp8266/index.html
