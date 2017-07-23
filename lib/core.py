@@ -81,9 +81,9 @@ class MQTTClientWrapper:
     def disconnect(self):
         self.mqtt_client.disconnect()
 
-    def publish(self, topic, msg):
+    def publish(self, topic, msg, qos=0, retain=False):
         print('publishing topic {}: {}...'.format(topic, msg), end='')
-        self.mqtt_client.publish(topic, msg)
+        self.mqtt_client.publish(topic, msg, qos, retain)
         print('done')
 
     def subscribe(self, topic, callback):
@@ -117,7 +117,13 @@ class WifiWrapper:
 
     def connect(self):
         attempt = 1
+
+        ap_if = network.WLAN(network.AP_IF)
         sta_if = network.WLAN(network.STA_IF)
+
+        if ap_if.active():
+            ap_if.active(False)
+
         if not sta_if.isconnected():
             sta_if.active(True)
             while attempt <= self.max_retries:
