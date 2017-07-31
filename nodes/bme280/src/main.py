@@ -24,7 +24,8 @@ def run():
             # connect wifi
             if wifi is None:
                 wifi = core.WifiWrapper(config)
-            wifi.connect()
+            if not wifi.isconnected:
+                wifi.connect()
 
             # connect mqtt
             if mqtt is None:
@@ -52,8 +53,7 @@ def run():
             payload = {'name': 'humidity', 'value': humidity, 'unit': 'pct'}
             mqtt.publish(config.MQTT_TOPIC + '/humidity', ujson.dumps(payload))
 
-            if config.ENABLE_DEEPSLEEP:
-                mqtt.disconnect()
+            mqtt.disconnect()
             core.sleep(config)
 
         except Exception as e:
