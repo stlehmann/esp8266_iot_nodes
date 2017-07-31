@@ -114,24 +114,23 @@ class WifiWrapper:
         self.password = config.WIFI_PASSWORD
         self.max_retries = WIFI_MAX_RETRIES
         self.timeout_ms = WIFI_TIMEOUT_MS
+        self.ap_if = network.WLAN(network.AP_IF)
+        self.sta_if = network.WLAN(network.STA_IF)
 
     def connect(self):
         attempt = 1
 
-        ap_if = network.WLAN(network.AP_IF)
-        sta_if = network.WLAN(network.STA_IF)
+        if self.ap_if.active():
+            self.ap_if.active(False)
 
-        if ap_if.active():
-            ap_if.active(False)
-
-        if not sta_if.isconnected():
-            sta_if.active(True)
+        if not self.sta_if.isconnected():
+            self.sta_if.active(True)
             while attempt <= self.max_retries:
                 print('connecting to network "{}" (attempt {})...'
                       .format(self.ssid, attempt), end='')
-                sta_if.connect(self.ssid, self.password)
+                self.sta_if.connect(self.ssid, self.password)
                 t0 = utime.ticks_ms()
-                while not sta_if.isconnected():
+                while not self.sta_if.isconnected():
                     if abs(utime.ticks_ms() - t0) > self.timeout_ms:
                         print('error')
                         print('wifi connection timed out')
@@ -142,4 +141,8 @@ class WifiWrapper:
             else:
                 raise WifiConnectionError()
         print('done')
-        print('network config:', sta_if.ifconfig())
+        print('network config:', self.sta_if.ifconfig())
+
+    @property
+    def isconnected(self):
+        return self.sta_if.isconnected()
