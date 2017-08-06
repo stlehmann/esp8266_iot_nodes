@@ -31,6 +31,7 @@ Wifi and WebREPL is activated.
 | FS1000A   | radio controlled power switch            |
 | DS18X20   | digital temperature sensor               |
 | HC-SR501  | passive infrared motion sensor           |
+| grove     | Grove soil moisture sensor               |
 
 [0]: http://nodemcu.com/index_en.html
 [1]: https://docs.micropython.org/en/latest/esp8266/index.html
