@@ -25,13 +25,13 @@ Wifi and WebREPL is activated.
 
 ## Nodes
 
-| Node name | description                              | 
-| --------- | ---------------------------------------- |
-| BME280    | humidity, temperature, pressure          |
-| FS1000A   | radio controlled power switch            |
-| DS18X20   | digital temperature sensor               |
-| HC-SR501  | passive infrared motion sensor           |
-| grove     | Grove soil moisture sensor               |
+| Node name        | description                              | 
+| ---------------- | ---------------------------------------- |
+| [BME280][7]      | humidity, temperature, pressure sensor   |
+| [FS1000A][8]     | radio controlled power switch            |
+| [DS18X20][9]     | digital temperature sensor               |
+| [HC-SR501][10]   | passive infrared motion sensor           |
+| [moisture][11]   | soil moisture sensor                     |
 
 [0]: http://nodemcu.com/index_en.html
 [1]: https://docs.micropython.org/en/latest/esp8266/index.html
@@ -40,3 +40,8 @@ Wifi and WebREPL is activated.
 [4]: https://github.com/wendlers/mpfshell
 [5]: https://github.com/espressif/esptool
 [6]: http://micropython.org/webrepl/
+[7]: https://github.com/MrLeeh/esp8266_iot_nodes/tree/master/nodes/bme280
+[8]: https://github.com/MrLeeh/esp8266_iot_nodes/tree/master/nodes/fs1000a
+[9]: https://github.com/MrLeeh/esp8266_iot_nodes/tree/master/nodes/ds18x20
+[10]: https://github.com/MrLeeh/esp8266_iot_nodes/tree/master/nodes/hc_sr501
+[11]: https://github.com/MrLeeh/esp8266_iot_nodes/tree/master/nodes/moisture
